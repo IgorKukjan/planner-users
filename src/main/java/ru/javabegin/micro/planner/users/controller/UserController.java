@@ -13,6 +13,7 @@ import ru.javabegin.micro.planner.users.service.UserService;
 
 import java.text.ParseException;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 
 /*
@@ -135,21 +136,40 @@ public class UserController {
 
 
     // получение объекта по id
+//    @PostMapping("/id")
+//    public ResponseEntity<User> findById(@RequestBody Long id) {
+//
+//        User user = null;
+//
+//        // можно обойтись и без try-catch, тогда будет возвращаться полная ошибка (stacktrace)
+//        // здесь показан пример, как можно обрабатывать исключение и отправлять свой текст/статус
+//        try {
+//            user = userService.findById(id);
+//        } catch (NoSuchElementException e) { // если объект не будет найден
+//            e.printStackTrace();
+//            return new ResponseEntity("id=" + id + " not found", HttpStatus.NOT_ACCEPTABLE);
+//        }
+//
+//        return ResponseEntity.ok(user);
+//    }
+
     @PostMapping("/id")
     public ResponseEntity<User> findById(@RequestBody Long id) {
 
-        User user = null;
+        Optional<User> userOptional = userService.findById(id);
 
         // можно обойтись и без try-catch, тогда будет возвращаться полная ошибка (stacktrace)
         // здесь показан пример, как можно обрабатывать исключение и отправлять свой текст/статус
         try {
-            user = userService.findById(id);
+            if (userOptional.isPresent()) { // если объект найден
+                return ResponseEntity.ok(userOptional.get()); // получаем User из контейнера и возвращаем в теле ответа
+            }
         } catch (NoSuchElementException e) { // если объект не будет найден
             e.printStackTrace();
-            return new ResponseEntity("id=" + id + " not found", HttpStatus.NOT_ACCEPTABLE);
         }
 
-        return ResponseEntity.ok(user);
+        // пользователь с таким id не найден
+        return new ResponseEntity("id=" + id + " not found", HttpStatus.NOT_ACCEPTABLE);
     }
 
     // получение уникального объекта по email

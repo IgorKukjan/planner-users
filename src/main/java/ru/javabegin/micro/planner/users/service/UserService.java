@@ -9,6 +9,7 @@ import ru.javabegin.micro.planner.users.repo.UserRepository;
 
 import jakarta.transaction.Transactional;
 import java.util.Date;
+import java.util.Optional;
 
 // всегда нужно создавать отдельный класс Service для доступа к данным, даже если кажется,
 // что мало методов или это все можно реализовать сразу в контроллере
@@ -47,8 +48,12 @@ public class UserService {
         repository.deleteByEmail(email);
     }
 
-    public User findById(Long id) {
-        return repository.findById(id).get(); // т.к. возвращается Optional - можно получить объект методом get()
+//    public User findById(Long id) {
+//        return repository.findById(id).get(); // т.к. возвращается Optional - можно получить объект методом get()
+//    }
+
+    public Optional<User> findById(Long id) {
+        return repository.findById(id);
     }
 
     public Page<User> findByParams(String username, String password, PageRequest paging) {
