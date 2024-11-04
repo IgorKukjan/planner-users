@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.javabegin.micro.planner.entity.User;
 import ru.javabegin.micro.planner.users.search.UserSearchValues;
 import ru.javabegin.micro.planner.users.service.UserService;
+import ru.javabegin.micro.planner.utils.rest.webclient.UserWebClientBuilder;
 
 import java.text.ParseException;
 import java.util.NoSuchElementException;
@@ -36,12 +37,14 @@ public class UserController {
 
     public static final String ID_COLUMN = "id"; // имя столбца id
     private final UserService userService; // сервис для доступа к данным (напрямую к репозиториям не обращаемся)
+    private UserWebClientBuilder userWebClientBuilder;
 
 
     // используем автоматическое внедрение экземпляра класса через конструктор
     // не используем @Autowired ля переменной класса, т.к. "Field injection is not recommended "
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserWebClientBuilder userWebClientBuilder) {
         this.userService = userService;
+        this.userWebClientBuilder = userWebClientBuilder;
     }
 
 
@@ -68,7 +71,16 @@ public class UserController {
             return new ResponseEntity("missed param: username", HttpStatus.NOT_ACCEPTABLE);
         }
 
-        return ResponseEntity.ok(userService.add(user)); // возвращаем созданный объект со сгенерированным id
+
+        user = userService.add(user);
+
+        if(user != null){
+            userWebClientBuilder.initUserData(user.getId()).subscribe(result ->{
+                System.out.println("user populated: " + result);
+            });
+        }
+
+        return ResponseEntity.ok(user); // возвращаем созданный объект со сгенерированным id
 
     }
 
