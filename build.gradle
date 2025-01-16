@@ -2,6 +2,11 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.5'
     id 'io.spring.dependency-management' version '1.1.6'
+    id 'org.jetbrains.kotlin.jvm' version '2.1.0'
+
+    id "org.jetbrains.kotlin.plugin.spring" version "2.1.0" // для корректного создания spring бинов из котлин классов
+    id "org.jetbrains.kotlin.plugin.jpa" version "2.1.0" // для корректной работы hibernate/jpa с kotlin
+    id "org.jetbrains.kotlin.plugin.allopen" version "2.1.0" // делает все классы kotlin open, а не final
 }
 
 group = 'ru.javabegin.micro.planner'
@@ -44,6 +49,10 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 }
 
 dependencyManagement {
@@ -54,4 +63,15 @@ dependencyManagement {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 }
