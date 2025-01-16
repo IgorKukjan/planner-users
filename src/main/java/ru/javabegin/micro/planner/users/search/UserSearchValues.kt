@@ -1,27 +1,19 @@
-package ru.javabegin.micro.planner.users.search;
+package ru.javabegin.micro.planner.users.search
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 // возможные значения, по которым можно искать задачи + значения сортировки
-public class UserSearchValues {
-
-    // поля поиска (все типы - объектные, не примитивные. Чтобы можно было передать null)
-    private String email;
-    private String username;
-
+class UserSearchValues (
+    var email: String,
     // постраничность
-    private Integer pageNumber;
-    private Integer pageSize;
+    var pageNumber: Int,
+    var pageSize: Int,
 
     // сортировка
-    private String sortColumn;
-    private String sortDirection;
+    var sortColumn: String,
+    var sortDirection: String
+){
+    // поля поиска (все типы - объектные, не примитивные. Чтобы можно было передать null)
+
+     var username: String? = null
+
 
 }

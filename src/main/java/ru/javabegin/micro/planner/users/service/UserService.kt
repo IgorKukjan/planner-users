@@ -1,63 +1,51 @@
-package ru.javabegin.micro.planner.users.service;
+package ru.javabegin.micro.planner.users.service
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-import ru.javabegin.micro.planner.entity.Task;
-import ru.javabegin.micro.planner.entity.User;
-import ru.javabegin.micro.planner.users.repo.UserRepository;
-
-import jakarta.transaction.Transactional;
-import java.util.Date;
-import java.util.Optional;
+import jakarta.transaction.Transactional
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.stereotype.Service
+import ru.javabegin.micro.planner.entity.User
+import ru.javabegin.micro.planner.users.repo.UserRepository
+import java.util.*
 
 // всегда нужно создавать отдельный класс Service для доступа к данным, даже если кажется,
 // что мало методов или это все можно реализовать сразу в контроллере
 // Такой подход полезен для будущих доработок и правильной архитектуры (особенно, если работаете с транзакциями)
-@Service
-
-// все методы класса должны выполниться без ошибки, чтобы транзакция завершилась
+@Service // все методы класса должны выполниться без ошибки, чтобы транзакция завершилась
 // если в методе возникнет исключение - все выполненные операции откатятся (Rollback)
 @Transactional
-public class UserService {
-
-    private final UserRepository repository; // сервис имеет право обращаться к репозиторию (БД)
-
-    public UserService(UserRepository repository) {
-        this.repository = repository;
-    }
-
+class UserService(// сервис имеет право обращаться к репозиторию (БД)
+    private val repository: UserRepository
+) {
     // возвращает только либо 0 либо 1 объект, т.к. email уникален для каждого пользователя
-    public User findByEmail(String email) {
-        return repository.findByEmail(email);
+    fun findByEmail(email: String): User? {
+        return repository.findByEmail(email)
     }
 
-    public User add(User user) {
-        return repository.save(user); // метод save обновляет или создает новый объект, если его не было
+    fun add(user: User): User {
+        return repository.save(user) // метод save обновляет или создает новый объект, если его не было
     }
 
-    public User update(User user) {
-        return repository.save(user); // метод save обновляет или создает новый объект, если его не было
+    fun update(user: User): User {
+        return repository.save(user) // метод save обновляет или создает новый объект, если его не было
     }
 
-    public void deleteByUserId(Long id) {
-        repository.deleteById(id);
+    fun deleteByUserId(id: Long) {
+        repository.deleteById(id)
     }
 
-    public void deleteByUserEmail(String email) {
-        repository.deleteByEmail(email);
+    fun deleteByUserEmail(email: String) {
+        repository.deleteByEmail(email)
     }
 
-//    public User findById(Long id) {
-//        return repository.findById(id).get(); // т.к. возвращается Optional - можно получить объект методом get()
-//    }
-
-    public Optional<User> findById(Long id) {
-        return repository.findById(id);
+    //    public User findById(Long id) {
+    //        return repository.findById(id).get(); // т.к. возвращается Optional - можно получить объект методом get()
+    //    }
+    fun findById(id: Long): Optional<User> {
+        return repository.findById(id)
     }
 
-    public Page<User> findByParams(String username, String password, PageRequest paging) {
-        return repository.findByParams(username, password, paging);
+    fun findByParams(username: String?, email: String, paging: PageRequest): Page<User?> {
+        return repository.findByParams(username, email, paging)
     }
-
 }

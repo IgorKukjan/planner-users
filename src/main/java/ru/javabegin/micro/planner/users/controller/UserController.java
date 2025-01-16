@@ -228,8 +228,8 @@ public class UserController {
         String sortColumn = userSearchValues.getSortColumn() != null ? userSearchValues.getSortColumn() : null;
         String sortDirection = userSearchValues.getSortDirection() != null ? userSearchValues.getSortDirection() : null;
 
-        Integer pageNumber = userSearchValues.getPageNumber() != null ? userSearchValues.getPageNumber() : null;
-        Integer pageSize = userSearchValues.getPageSize() != null ? userSearchValues.getPageSize() : null;
+        Integer pageNumber = userSearchValues.getPageNumber();
+        Integer pageSize = userSearchValues.getPageSize();
 
         // направление сортировки
         Sort.Direction direction = sortDirection == null || sortDirection.trim().length() == 0 || sortDirection.trim().equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
