@@ -26,12 +26,16 @@ public class SpringSecurityConfig {
         return http.authorizeHttpRequests(auth ->
                 auth
 //                        .requestMatchers("/test/login").permitAll()
-                          .requestMatchers("/**").permitAll()
+
+//                          .requestMatchers("/**").permitAll()
+
+                        .requestMatchers("/admin/*").hasRole("admin")
+                        .requestMatchers("/auth/*").hasRole("user")
 
 //                        .requestMatchers("/user/*").hasAuthority("ROLE_user")
 //                        .requestMatchers("/admin/*").hasRole("admin")
 
-                        .anyRequest().authenticated())
+                        .anyRequest().authenticated())  //без access tokena не работают
                         .csrf(csrf -> csrf.disable())
                         .oauth2ResourceServer(oauth2 -> oauth2 // добавляем конвертер ролей из JWT в Authority (Role)
                                 .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter))
