@@ -1,6 +1,7 @@
 package ru.javabegin.micro.planner.users.controller;
 
 import jakarta.ws.rs.core.Response;
+import org.keycloak.admin.client.CreatedResponseUtil;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -41,6 +42,11 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/admin/user") // базовый URI
 public class AdminController {
+
+    private static final int CONFLICT = 409; // если пользователь уже существует в KC и пытаемся создать такого же
+
+    private static final String USER_ROLE_NAME = "user"; // название роли из KC
+    private static final String ADMIN_ROLE_NAME = "admin"; // название роли из KC
 
     public static final String ID_COLUMN = "id"; // имя столбца id
     private final UserService userService; // сервис для доступа к данным (напрямую к репозиториям не обращаемся)
@@ -95,11 +101,23 @@ public class AdminController {
 
 //        messageFuncActions.sendNewUserMessage(user.getId());
 
-        List<String> defaultRoles = new ArrayList<>();
-        defaultRoles.add("user");
-        defaultRoles.add("admin");
 
-        Response createResponse = keycloakUtils.createKeycloakUser(userDTO, defaultRoles);
+
+        Response createResponse = keycloakUtils.createKeycloakUser(userDTO);
+
+        if(createResponse.getStatus() == CONFLICT){
+            return new ResponseEntity("user or email already exists " + userDTO.getEmail(), HttpStatus.CONFLICT);
+        }
+
+        // получаем его ID
+        String userId = CreatedResponseUtil.getCreatedId(createResponse);
+        System.out.println("User created with userId: %s%n" + userId);
+
+        List<String> defaultRoles = new ArrayList<>();
+        defaultRoles.add(USER_ROLE_NAME);
+        defaultRoles.add(ADMIN_ROLE_NAME);
+
+        keycloakUtils.addRoles(userId, defaultRoles);
 
         return ResponseEntity.status(createResponse.getStatus()).build(); // возвращаем созданный объект со сгенерированным id
 
